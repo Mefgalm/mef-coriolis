@@ -1,11 +1,17 @@
 import { addDarknessPoints } from "./darkness-points.js";
 
-export function coriolisModifierDialog(modifierCallback) {
+const modifierDialogContent = () =>
+  `<div>
+    <p>${game.i18n.localize(
+    "YZECORIOLIS.ModifierForRollQuestion"
+  )}</p>
+    <input type='number' value='0' name='rollModifier'/> 
+  </div>`;
+
+export function coriolisModifierDialogOld(modifierCallback) {
   let d = new Dialog({
     title: game.i18n.localize("YZECORIOLIS.ModifierForRoll"),
-    content: `<p>${game.i18n.localize(
-      "YZECORIOLIS.ModifierForRollQuestion"
-    )}</p>`,
+    content: modifierDialogContent(),
     buttons: {
       nineMinus: {
         label: "-9",
@@ -86,7 +92,26 @@ export function coriolisModifierDialog(modifierCallback) {
       },
     },
     default: "zero",
-    close: () => {},
+    close: () => { },
+  });
+  d.render(true);
+}
+
+export function coriolisModifierDialog(modifierCallback) {
+  let d = new Dialog({
+    title: game.i18n.localize("YZECORIOLIS.ModifierForRoll"),
+    content: modifierDialogContent(),
+    buttons: {
+      apply: {
+        label: game.i18n.localize("YZECORIOLIS.Apply"),
+        callback: html => {
+          let result = html.find(`input[name='rollModifier']`);
+          modifierCallback(+result.val());
+        }
+      }
+    },
+    default: "apply",
+    close: () => { },
   });
   d.render(true);
 }
@@ -114,6 +139,17 @@ export async function coriolisRoll(chatOptions, rollData) {
   await roll.evaluate({ async: false });
   await showDiceSoNice(roll, chatOptions.rollMode);
   const result = evaluateCoriolisRoll(rollData, roll);
+  await showChatMessage(chatOptions, result);
+}
+
+export async function coriolisFreeRoll(chatOptions, diceCount) {
+  if (diceCount <= 0)
+    return;
+
+  let roll = new Roll(`${diceCount}d6`);
+  await roll.evaluate({ async: false });
+  await showDiceSoNice(roll, chatOptions.rollMode);
+  const result = evaluateCoriolisFreeRoll(roll);
   await showChatMessage(chatOptions, result);
 }
 /**
@@ -202,6 +238,30 @@ export function evaluateCoriolisRoll(rollData, roll) {
     rollData: rollData,
     roll: roll,
     pushed: rollData.pushed,
+  };
+
+  return result;
+}
+
+export function evaluateCoriolisFreeRoll(roll) {
+  let successes = 0;
+  let maxRoll = CONFIG.YZECORIOLIS.maxRoll;
+  roll.dice.forEach((part) => {
+    part.results.forEach((r) => {
+      if (r.result === maxRoll) {
+        successes++;
+      }
+    });
+  });
+  let result = {
+    desparationRoll: false,
+    successes: successes,
+    limitedSuccess: successes > 0 && successes < 3,
+    criticalSuccess: successes >= 3,
+    failure: successes === 0,
+    rollData: { rollTitle: "Roll" },
+    roll: roll,
+    pushed: false,
   };
 
   return result;
