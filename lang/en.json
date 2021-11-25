@@ -28,6 +28,7 @@
   "YZECORIOLIS.PushedRoll": "Pushed Roll",
   "YZECORIOLIS.ModifierForRoll": "Modifier",
   "YZECORIOLIS.ModifierForRollQuestion": "Enter the modifier for your roll",
+  "YZECORIOLIS.Apply": "Apply",
 
   "YZECORIOLIS.DarknessPointsControls": "Darkness Points Controls",
   "YZECORIOLIS.DarknessPointsAdd": "Add a Darkness Point",
@@ -117,7 +118,7 @@
   "YZECORIOLIS.Quantity": "Quantity",
   "YZECORIOLIS.Restricted": "Restricted",
   "YZECORIOLIS.Bonus": "Bonus",
-  "YZECORIOLIS.Initiative": "Initiative",
+  "YZECORIOLIS.AP": "AP",
   "YZECORIOLIS.CritType": "Crit Type",
   "YZECORIOLIS.Crit": "Crit",
   "YZECORIOLIS.Damage": "Damage",

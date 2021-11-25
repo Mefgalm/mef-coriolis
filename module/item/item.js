@@ -57,6 +57,7 @@ export class yzecoriolisItem extends Item {
       bonus: bonus,
       rollTitle: item.name,
       pushed: false,
+      isFree: false
     };
     const chatOptions = this.actor._prepareChatRollOptions(
       "systems/yzecoriolis/templates/sidebar/roll.html",

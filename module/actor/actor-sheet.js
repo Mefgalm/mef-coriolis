@@ -1,5 +1,5 @@
 import { getID } from "../util.js";
-import { coriolisRoll } from "../coriolis-roll.js";
+import { coriolisRoll, coriolisFreeRoll } from "../coriolis-roll.js";
 import { coriolisModifierDialog } from "../coriolis-roll.js";
 import {
   computeNewBarValue,
@@ -442,8 +442,10 @@ export class yzecoriolisActorSheet extends ActorSheet {
         : 0,
       modifier: 0,
       bonus: dataset.bonus ? Number(dataset.bonus) : 0,
+      ap: dataset.ap ? Number(dataset.ap) : 0,
       rollTitle: dataset.label,
       pushed: false,
+      isFree: false
     };
     const chatOptions = this.actor._prepareChatRollOptions(
       "systems/yzecoriolis/templates/sidebar/roll.html",

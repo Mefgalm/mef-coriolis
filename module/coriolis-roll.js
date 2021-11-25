@@ -123,7 +123,7 @@ export function coriolisModifierDialog(modifierCallback) {
  * @param  {} chatOptions the options used to display the roll result in chat.
  * @param  {} rollData contains all data necessary to make a roll in Coriolis.
  */
-export async function coriolisRoll(chatOptions, rollData) {
+export async function coriolisRoll(chatOptions, rollData) {  
   let errorObj = { error: "YZECORIOLIS.ErrorsInvalidSkillRoll" };
   const isValid = isValidRoll(rollData, errorObj);
   if (!isValid) {
@@ -142,14 +142,14 @@ export async function coriolisRoll(chatOptions, rollData) {
   await showChatMessage(chatOptions, result);
 }
 
-export async function coriolisFreeRoll(chatOptions, diceCount) {
-  if (diceCount <= 0)
+export async function coriolisFreeRoll(chatOptions, rollData) {
+  if (rollData.diceCount <= 0)
     return;
 
-  let roll = new Roll(`${diceCount}d6`);
+  let roll = new Roll(`${rollData.diceCount}d6`);
   await roll.evaluate({ async: false });
   await showDiceSoNice(roll, chatOptions.rollMode);
-  const result = evaluateCoriolisFreeRoll(roll);
+  const result = evaluateCoriolisRoll(rollData, roll);
   await showChatMessage(chatOptions, result);
 }
 /**
@@ -226,45 +226,35 @@ export function evaluateCoriolisRoll(rollData, roll) {
       }
     });
   });
-  const isDesparation = getTotalDice(rollData) <= 0;
-  let result = {
-    desparationRoll: isDesparation,
-    successes: successes,
-    limitedSuccess: isDesparation
-      ? successes === 2
-      : successes > 0 && successes < 3,
-    criticalSuccess: successes >= 3,
-    failure: isDesparation ? successes < 2 : successes === 0,
-    rollData: rollData,
-    roll: roll,
-    pushed: rollData.pushed,
-  };
+  if (rollData.isFree) {
+    return {
+      desparationRoll: false,
+      successes: successes,
+      limitedSuccess: successes > 0 && successes < 3,
+      criticalSuccess: successes >= 3,
+      failure: successes === 0,
+      rollData: rollData,
+      roll: roll,
+      pushed: false,
+    };
+  } else {
 
-  return result;
-}
+    const isDesparation = getTotalDice(rollData) <= 0;
+    let result = {
+      desparationRoll: isDesparation,
+      successes: successes,
+      limitedSuccess: isDesparation
+        ? successes === 2
+        : successes > 0 && successes < 3,
+      criticalSuccess: successes >= 3,
+      failure: isDesparation ? successes < 2 : successes === 0,
+      rollData: rollData,
+      roll: roll,
+      pushed: rollData.pushed,
+    };
 
-export function evaluateCoriolisFreeRoll(roll) {
-  let successes = 0;
-  let maxRoll = CONFIG.YZECORIOLIS.maxRoll;
-  roll.dice.forEach((part) => {
-    part.results.forEach((r) => {
-      if (r.result === maxRoll) {
-        successes++;
-      }
-    });
-  });
-  let result = {
-    desparationRoll: false,
-    successes: successes,
-    limitedSuccess: successes > 0 && successes < 3,
-    criticalSuccess: successes >= 3,
-    failure: successes === 0,
-    rollData: { rollTitle: "Roll" },
-    roll: roll,
-    pushed: false,
-  };
-
-  return result;
+    return result;
+  }
 }
 
 function getTotalDice(rollData) {
@@ -319,6 +309,28 @@ async function updateChatMessage(chatMessage, resultData) {
     "systems/yzecoriolis/templates/sidebar/dice-results.html",
     getTooltipData(resultData)
   );
+  if (resultData.rollData.isFree) {
+    let chatData = {
+      results: resultData,
+      tooltip: tooltip,
+      canPush: false,
+    };
+    return renderTemplate(
+      "systems/yzecoriolis/templates/sidebar/free-roll.html",
+      chatData
+    ).then((html) => {
+      chatMessage["content"] = html;
+      return chatMessage
+        .update({
+          content: html,
+          ["flags.data"]: { results: chatData.results },
+        })
+        .then((newMsg) => {
+          ui.chat.updateMessage(newMsg);
+        });
+    });
+  }
+
   let chatData = {
     title: getRollTitle(resultData.rollData),
     results: resultData,
@@ -386,6 +398,7 @@ export async function coriolisChatListeners(html) {
       messageId = button.parents(".message").attr("data-message-id"),
       message = game.messages.get(messageId);
     let results = message.getFlag("yzecoriolis", "results");
+    console.log(results);
     coriolisPushRoll(message, results.rollData, message.roll);
   });
 }

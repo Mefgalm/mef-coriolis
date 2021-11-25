@@ -6,7 +6,7 @@ import { yzecoriolisActorSheet } from "./actor/actor-sheet.js";
 import { yzecoriolisShipSheet } from "./actor/ship-sheet.js";
 import { yzecoriolisItem } from "./item/item.js";
 import { yzecoriolisItemSheet } from "./item/item-sheet.js";
-import { coriolisChatListeners } from "./coriolis-roll.js";
+import { coriolisChatListeners, coriolisModifierDialog, coriolisFreeRoll } from "./coriolis-roll.js";
 import {
   getAttributeKeyForWeaponType,
   getSkillKeyForWeaponType,
@@ -40,7 +40,7 @@ Hooks.once("init", async function () {
    * @type {String}
    */
   CONFIG.Combat.initiative = {
-    formula: "1d6",
+    formula: "1d66",
     decimals: 0,
   };
 
@@ -388,6 +388,25 @@ Hooks.once("ready", async function () {
   }
   //bootstrapTalentCompendium();
   //bootstrapGearCompendium();
+
+  $(document).on('click', '#chat-controls .chat-control-icon .fa-dice-d20', ev => {
+    let chatOptions = {
+      speaker: {
+        alias: "Free Roll",
+        //actor: this.data._id,
+      },
+      template: "systems/yzecoriolis/templates/sidebar/free-roll.html",
+      rollMode: game.settings.get("core", "rollMode"),
+      sound: CONFIG.sounds.dice,
+      flags: {
+        //img: this.data.token.randomImg ? this.data.img : this.data.token.img,
+      },
+    };
+
+    coriolisModifierDialog((modifier) => {
+      coriolisFreeRoll(chatOptions, { diceCount: modifier, isFree: true });
+    });
+  });
 
   // wait to register hotbar drop hook on ready so that modules could register earlier if they want to
   Hooks.on("hotbarDrop", (bar, data, slot) =>

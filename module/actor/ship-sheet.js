@@ -390,6 +390,7 @@ export class yzecoriolisShipSheet extends ActorSheet {
       modifier: 0,
       rollTitle: CONFIG.YZECORIOLIS.skillRolls[skillKey],
       pushed: false,
+      isFree: false
     };
 
     const chatOptions = crewEntity._prepareChatRollOptions(

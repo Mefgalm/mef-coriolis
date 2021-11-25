@@ -55,9 +55,9 @@
             {{!-- setup header for Weapons--}}
             <li class="gear-category-header flexrow">
                 <div class="gear-category-name first">{{localize "YZECORIOLIS.Weapons"}}</div>
-                <div class="gear-category-name center">{{localize "YZECORIOLIS.Bonus"}}</div>
-                <div class="gear-category-name center">{{localize "YZECORIOLIS.Initiative"}}</div>
+                <div class="gear-category-name center">{{localize "YZECORIOLIS.Bonus"}}</div>                
                 <div class="gear-category-name center">{{localize "YZECORIOLIS.Damage"}}</div>
+                <div class="gear-category-name center">{{localize "YZECORIOLIS.AP"}}</div>
                 <div class="gear-category-name center">{{localize "YZECORIOLIS.Crit"}}</div>
                 <div class="gear-category-name center">{{localize "YZECORIOLIS.Range"}}</div>
                 <div class="gear-category-name center">{{localize "YZECORIOLIS.Automatic"}}</div>
@@ -80,7 +80,9 @@
                             data-rolltype="weapon" data-label="{{weapon.name}}"
                             data-skillkey="{{getSkillKeyForWeaponType weapon.data.melee}}"
                             data-attributekey="{{getAttributeKeyForWeaponType weapon.data.melee}}"
-                            data-bonus="{{weapon.data.bonus}}">
+                            data-bonus="{{weapon.data.bonus}}"
+                            data-ap="{{weapon.data.ap}}"
+                            data-damage="{{weapon.data.damage}}">
                         </div>
                         <span class="expandable-info">{{weapon.name}}</span>
                     </div>
@@ -89,12 +91,13 @@
                     </div>
 
                     <div class="gear-row-data">
-                        {{weapon.data.initiative}}
+                        {{weapon.data.damage}}
                     </div>
 
                     <div class="gear-row-data">
-                        {{weapon.data.damage}}
+                        {{weapon.data.ap}}
                     </div>
+
                     <div class="gear-row-data">
                         {{getWeaponCritDisplay weapon.data.crit}}
                     </div>
@@ -123,9 +126,9 @@
             {{!-- setup header for Explosives--}}
             <li class="gear-category-header flexrow">
                 <div class="gear-category-name first">{{localize "YZECORIOLIS.Explosives"}}</div>
-                <div class="gear-category-name center">{{localize "YZECORIOLIS.Bonus"}}</div>
-                <div class="gear-category-name center">{{localize "YZECORIOLIS.Initiative"}}</div>
+                <div class="gear-category-name center">{{localize "YZECORIOLIS.Bonus"}}</div>                
                 <div class="gear-category-name center">{{localize "YZECORIOLIS.Damage"}}</div>
+                <div class="gear-category-name center">{{localize "YZECORIOLIS.AP"}}</div>
                 <div class="gear-category-name center">{{localize "YZECORIOLIS.Crit"}}</div>
                 <div class="gear-category-name center">{{localize "YZECORIOLIS.BlastPower"}}</div>
                 <div class="gear-category-name center">{{localize "YZECORIOLIS.BlastRadius"}}</div>
@@ -144,19 +147,23 @@
                     <div class="gear-name flexrow">
                         <div class="gear-img-container rollable" style="background-image: url({{explosive.img}})"
                             data-rolltype="weapon" data-label="{{explosive.name}}" data-skillkey="rangedcombat"
-                            data-attributekey="agility" data-bonus="{{explosive.data.bonus}}">
+                            data-attributekey="agility" 
+                            data-bonus="{{explosive.data.bonus}}" 
+                            data-ap="{{explosive.data.ap}}"
+                            data-damage="{{weapon.data.damage}}">
                         </div>
                         <span class="expandable-info">{{explosive.name}}</span>
                     </div>
                     <div class="gear-row-data">
                         {{explosive.data.bonus}}
                     </div>
-
-                    <div class="gear-row-data">
-                        {{explosive.data.initiative}}
-                    </div>
+                    
                     <div class="gear-row-data">
                         {{explosive.data.damage}}
+                    </div>
+
+                    <div class="gear-row-data">
+                        {{explosive.data.ap}}
                     </div>
 
                     <div class="gear-row-data">
